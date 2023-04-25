@@ -1,6 +1,9 @@
 ## Visionary_S_AP_BoxMeasurement
+
 To measure the width and length of boxes.
+
 ### Description
+
 The app uses the Shape3D.fitPlane() with LEASTSQUARES and RANSAC in combination
 
   Following steps are done for each image to calculate the dimensions of the box:
@@ -13,9 +16,13 @@ The app uses the Shape3D.fitPlane() with LEASTSQUARES and RANSAC in combination
        working range
     7. Rotate the point cloud to find the rotation angle where the point cloud is axis aligned
     8. From the point cloud of the box, find its bounding box and calculate the dimensions
+
 ### How to run
+
 Start by running the app (F5) or debugging (F7+F10).
 Set a breakpoint on the first row inside the main function to debug step-by-step.
 See the results in the viewer on the DevicePage.
+
 ### Topics
-View, Visionary, Stereo, Box, Measure, SICK-AppSpace
+
+view, visionary, stereo, box, measure, sick-appspace
