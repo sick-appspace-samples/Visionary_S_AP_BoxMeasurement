@@ -4,7 +4,7 @@
 
   Summary:
   To measure the width and length of boxes
-  
+
   Description:
   The app uses the Shape3D.fitPlane() with LEASTSQUARES and RANSAC in combination
 
@@ -23,7 +23,7 @@
   Start by running the app (F5) or debugging (F7+F10).
   Set a breakpoint on the first row inside the main function to debug step-by-step.
   See the results in the different image viewer on the DevicePage.
-    
+
 ------------------------------------------------------------------------------]]
 --Start of Global Scope---------------------------------------------------------
 Log.setLevel("INFO")
@@ -84,7 +84,7 @@ local function main()
   config:setColorIntegrationTime(5000)
   config:enableDepthValidation(true)
   config:setDepthValidationLevel(8)
-  
+
   -- for high res maps keep fps below 5 !
   -- web viewers performance is too bad
   config.setFramePeriod(config, 333000) -- micro seconds
@@ -94,7 +94,7 @@ end
 
 --------------------------------------------------------------------------------
 
---@transformPlaneToXy(pointCloud:PointCloud)
+---@param pointCloud PointCloud
 local function transformPlaneToXy(pointCloud)
 
   -- Get the parameters of the fitted plane from the point cloud
@@ -141,7 +141,8 @@ end
 
 --------------------------------------------------------------------------------
 
---@handleOnNewImage(image[+]:Image,sensordata:SensorData)
+---@param image Image[]
+---@param sensordata SensorData
 local function handleOnNewImage(image)
   local startTime = DateTime.getTimestamp()
   local width = image[1]:getWidth()
@@ -152,7 +153,7 @@ local function handleOnNewImage(image)
   local grayImage = rgbImage:toGray()
 
   -------------------------------- FIND FLAT REGION AT CENTER --------------------------------
-  
+
   -- First identify the flat regions that are connected in the image
   local flats = Image.getFlatRegion(image[1], 2 , 3, false)
   local connectedFlatRegions = flats:findConnected(MIN_REGION_SIZE, MAX_REGION_SIZE, 10)
@@ -181,19 +182,19 @@ local function handleOnNewImage(image)
     resultViewer:present()
     return -- early out
   end
-  
+
   -------------------------------- CALCULATE BOX REGION FROM EDGE INFO --------------------------------
 
   -- calculate sobel edges in grayscale rgb, paint unused pixels black
   local edges = grayImage:sobelMagnitude(boxRegion)
   edges:fillRegionInplace(boxRegion:invert(edges), 255)
-  
+
   -- select flat/dark pixels from edges map (based on rgb map)
   local prEdges = edges:threshold(0, 50, boxRegion)
   -- select biggest connected region
   -- !! chaotic labeled/printed boxes will not work !!
   local connected = prEdges:findConnected(MIN_REGION_SIZE, nil, 10)
-  
+
   local prBox
   if #connected > 0 then
     prBox = connected[1]:dilate(3):getIntersection(boxRegion):fillHoles():getBorderRegion()
@@ -205,7 +206,7 @@ local function handleOnNewImage(image)
     resultViewer:present()
     return -- early out
   end
-  
+
   -------------------------------- FILTER POINTS IN BOX REGION FROM POINT CLOUD --------------------------------
 
   -- pointcloud created from svs edp converter
@@ -299,11 +300,11 @@ local function handleOnNewImage(image)
   textDecoration:setFontWeight("BOLD")
   textDecoration:setColor(255, 0, 0, 255)
   resultViewer:addText(info, textDecoration, "dim", "zmap")
-  
+
   local connectedRegionViewerid =  connectedRegionViewer:addImage(rgbImage, nil)
   connectedRegionViewer:addPixelRegion(boxRegion, blueRoiDecoration, "notused", connectedRegionViewerid)
   connectedRegionViewer:addPixelRegion(prBox, redRoiDecoration, "region2", connectedRegionViewerid)
-  
+
   local connectedRegionEdgesViewerid = connectedRegionEdgesViewer:addImage(edges)
   connectedRegionEdgesViewer:addPixelRegion(prBox, redRoiDecoration, "prBox", connectedRegionEdgesViewerid)
 
@@ -314,7 +315,7 @@ local function handleOnNewImage(image)
   box3DViewer:addShape(bBox, shapeDecoration, "l1", box3DViewerid)
   --box3DViewer:addShape(boxPlane, shapeDecoration, "l2", box3DViewerid)
   --box3DViewer:addShape(environmentPlane, shapeDecoration, "l3", box3DViewerid)
-  
+
   local boxToVisualize = Shape3D.createBox(21,21,21)
   local box3DDecoration = View.ShapeDecoration.create()
   box3DDecoration:setLineColor(0, 0, 0, 255)
